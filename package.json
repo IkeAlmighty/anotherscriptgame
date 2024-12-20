@@ -1,0 +1,21 @@
+{
+    "name": "anotherscriptgame",
+    "version": "1.0.0",
+    "main": "index.js",
+    "directories": {
+        "test": "test"
+    },
+    "scripts": {
+        "dev": "nodemon index.js",
+        "run": "node index.js"
+    },
+    "author": "ikealmighty",
+    "license": "ISC",
+    "description": "",
+    "devDependencies": {
+        "nodemon": "^3.1.9"
+    },
+    "dependencies": {
+        "isolated-vm": "^5.0.3"
+    }
+}
