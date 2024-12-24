@@ -9,4 +9,4 @@ client.connect(8080, "localhost", () => {
 
 client.on("data", (data) => console.log(data));
 
-client.write(`{ "entityId": 111, "code": "log('hello');" }`);
+client.write(`{ "entityId": "54861c87-f5ea-40d4-b658-9b09de47e4fd", "code": "dev_addSatelite('hello');" }`);
