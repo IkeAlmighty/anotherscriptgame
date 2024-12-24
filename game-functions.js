@@ -1,17 +1,15 @@
 const db = require("./db.js");
 
-const devFunctions = {
-    setOrbit: (primaryId) => {},
-    setOwner: (ownerId) => {},
-    addSatelite: (sateliteId) => {},
-    getWorld: () => db.world,
-};
-
-const playerFunctions = {
+const gameFunctions = {
+    dev_setOrbit: (primaryId) => { },
+    dev_setOwner: (ownerId) => { },
+    dev_addSatelite: (sateliteId) => console.log(sateliteId),
     getEntityData: (entityId) => {
         return entityId;
     },
     log: (...args) => console.log(...args),
 };
 
-module.exports = { devFunctions, playerFunctions };
+
+
+module.exports = { gameFunctions };
