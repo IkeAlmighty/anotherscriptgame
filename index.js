@@ -1,6 +1,6 @@
 const net = require("net");
 const ivm = require("isolated-vm");
-const { devFunctions, playerFunctions } = require("./game-functions.js");
+const { gameFunctions } = require("./game-functions.js");
 const auth = require("./game-auth.js");
 const db = require("./db.js");
 
@@ -13,23 +13,27 @@ function Sandbox(id, code) {
     this.isolate = new ivm.Isolate({ memoryLimit: 1024 });
     this.code = code;
     this.id = id;
-    this.owner = db.getOwner(this.id);
+    this.owner = db.collection()[this.id]?.owner;
 
     this.run = () => {
         const context = this.isolate.createContextSync();
 
-        Object.keys(playerFunctions).forEach((key) => {
-            context.global.setSync(key, playerFunctions[key]);
+        const allowedFunctions = auth.applyPermissions(this.owner, gameFunctions);
+
+        Object.keys(allowedFunctions).forEach((key) => {
+            context.global.setSync(key, allowedFunctions[key]);
         });
 
-        if (this.owner === "dev") {
-            Object.keys(devFunctions).forEach((key) => {
-                context.global.setSync(key, devFunctions[key]);
-            });
-        }
-
+        // TODO: consider whether it matters if scripts are ran at the same time.
+        // context.eval might be just as good
         context.evalSync(this.code, { timeout: MAX_RUNTIME_MS });
     };
+
+    this.dispose = (error) => {
+        if (error) console.log(error); // TODO: print this to a entity specific log
+
+        this.isolate.dispose();
+    }
 }
 
 // SERVER
@@ -79,14 +83,22 @@ server.listen(port, () => {
     console.log(`starting net server on port ${port}`);
 });
 
+// calculate how long it takes to run every script one after another.
+// Returns 500 as a minimum
 function calculateCycleRate() {
     const maxTime = Object.keys(sandboxes).length * MAX_RUNTIME_MS;
     if (maxTime > 500) return maxTime;
     return 500;
 }
 
+// run each sandbox's code synchronously.
 setInterval(() => {
     for (let id in sandboxes) {
-        sandboxes[id].run();
+        try {
+            sandboxes[id].run();
+        } catch (error) {
+            sandboxes[id].dispose(error);
+            delete sandboxes[id];
+        }
     }
 }, calculateCycleRate());
