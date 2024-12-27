@@ -15,6 +15,10 @@ const collection = {
             "ac2469b7-7ea6-4edc-abb3-6c20b8f72079",
         ],
     },
+    test2: {
+        owner: "dev",
+        satelites: [],
+    },
 };
 
 module.exports = {
