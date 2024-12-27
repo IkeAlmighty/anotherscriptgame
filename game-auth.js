@@ -1,4 +1,4 @@
-function auth(authCode) {
+function authorize(authCode) {
     return true; //TODO: implement
 }
 
@@ -21,4 +21,4 @@ function applyPermissions(owner, functions) {
     return allowedFunctions;
 }
 
-module.exports = { applyPermissions };
+module.exports = { applyPermissions, authorize };
