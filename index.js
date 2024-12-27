@@ -47,9 +47,9 @@ const server = net.createServer((socket) => {
         console.log(`recieved: "${data}"`);
 
         const dataJSON = JSON.parse(data);
-        const { entityId, code } = dataJSON;
+        const { entityId, code, token } = dataJSON;
 
-        if (!dataJSON.code || !dataJSON.entityId) {
+        if (!code || !entityId) {
             // throw error
             socket.write(
                 `UNDEFINED ERROR: { entityId: ${entityId}, code: ${code} }`
@@ -58,9 +58,14 @@ const server = net.createServer((socket) => {
         }
 
         // TODO: authenticate
+        if (!auth.authorize(token)) {
+            socket.write(`Token ${token} is invalid.`);
+            socket.end();
+            return;
+        }
 
-        // delete old isolate:
         if (sandboxes[entityId]) {
+            // delete old isolate:
             const sandbox = sandboxes[entityId];
             sandbox.isolate.dispose();
         }
