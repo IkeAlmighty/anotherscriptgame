@@ -18,7 +18,10 @@ function Sandbox(id, code) {
     this.run = () => {
         const context = this.isolate.createContextSync();
 
-        const allowedFunctions = auth.applyPermissions(this.owner, gameFunctions);
+        const allowedFunctions = auth.applyPermissions(
+            this.owner,
+            gameFunctions
+        );
 
         Object.keys(allowedFunctions).forEach((key) => {
             context.global.setSync(key, allowedFunctions[key]);
@@ -26,14 +29,14 @@ function Sandbox(id, code) {
 
         // TODO: consider whether it matters if scripts are ran at the same time.
         // context.eval might be just as good
-        context.evalSync(this.code, { timeout: MAX_RUNTIME_MS });
+        context.eval(this.code, { timeout: MAX_RUNTIME_MS });
     };
 
     this.dispose = (error) => {
         if (error) console.log(error); // TODO: print this to a entity specific log
 
         this.isolate.dispose();
-    }
+    };
 }
 
 // SERVER
